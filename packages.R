@@ -1,0 +1,16 @@
+library(tsutils)
+library(forecast)
+library(smooth)
+library(MASS)
+library(nloptr)
+library(hts)
+library(corpcor)
+library(xtable)
+library(greybox)
+library(clusterGeneration)
+library(parallel)
+library(lava)
+library(ggplot2)
+library(RColorBrewer)
+
+# devtools::install_github('config-i1/smooth') # should run as administrator
