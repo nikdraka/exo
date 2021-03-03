@@ -18,10 +18,8 @@ invisible(clusterExport(cl, "createInit"))
 invisible(clusterExport(cl, "lossFun"))
 invisible(clusterExport(cl, "loopLambdaCV"))
 invisible(clusterExport(cl, "fun.iter"))
-invisible(clusterExport(cl, "freq.ts"))
-invisible(clusterExport(cl, "benchmark.ets"))
 
-sqq <- c(0, rev(exp(seq.int(from = log(1), to = log(1e-04), by = -(log(1)-log(1e-04))/(30-1)))))
+sqq <- rev(exp(seq.int(from = log(1), to = log(1e-04), by = -(log(1)-log(1e-04))/(30-1))))
 invisible(clusterExport(cl, "sqq"))
 
 runs <- 10
