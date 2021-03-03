@@ -1,4 +1,10 @@
+y <- sim.es(model = "ANN", obs = 70, nsim = 1, frequency = 10, 
+            persistence = 0.4, initial = 100,
+            bounds = "usual")$data
+
 matrixMaker <- function(x0, y, type = c("optimized", "backcasting")) {
+  
+  freq.ts <- frequency(y)
   
   matH <- matrix(c(1,1), ncol = 2, byrow = TRUE)
   matF <- matrix(c(1, x0[3],
@@ -16,7 +22,6 @@ matrixMaker <- function(x0, y, type = c("optimized", "backcasting")) {
               persistenceMatrix = matG,
               initialValue = init))
 }
-
 
 gen.forecast <- function(x, statevec = statevector, h) {
   
@@ -191,11 +196,6 @@ lossFun(x0$initials, y, type = "optimized", penalty = "lasso", lambda = 0.5, ela
 x0 <- createInit(y, type = "backcasting")
 lossFun(x0$initials, y, type = "backcasting", penalty = "lasso", lambda = 0.5, elastic = NULL)
 
-y <- sim.es(model = "ANN", obs = 70, nsim = 1, frequency = 10, 
-            persistence = 0.4, initial = 100,
-            bounds = "usual")$data
-
-
 
 loopLambdaCV <- function(data = y, type = c("optimized", "backcasting"), 
                          penalty = c("lasso", "adaptive", "enet", "adaptive-enet"),
@@ -285,9 +285,6 @@ loopLambdaCV <- function(data = y, type = c("optimized", "backcasting"),
   return(mat.lambda)
 }
 
-y <- sim.es(model = "ANN", obs = 70, nsim = 1, frequency = 10, 
-            persistence = 0.4, initial = 100,
-            bounds = "usual")$data
 system.time({x <- loopLambdaCV(data = y, type = "backcasting", penalty = "lasso", sq = 0)})
 system.time({x <- loopLambdaCV(data = y, type = "optimized", penalty = "lasso", sq = seq(0,0.2,0.1))})
 
