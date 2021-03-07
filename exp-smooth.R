@@ -11,17 +11,15 @@ for (i in seq(0, 1, 0.1)) {
 
 
 myLoss_OptimalInitials <- function(actual, fitted, B) {
-
+    
+    # Make sure that we use seasonal models
+    
+    nB <- length(B)
     obsActual <- length(actual)
     yDenominator <- max(sd(diff(actual)),1)
-
-    if (length(B) == 5) {
-        priority <- 0.5^c(1,0,0,1,0)
-        B <- B * priority
-    } else if (length(B) == 7) {
-        priority <- 0.5^c(2,1,0,1,2,1,0)
-        B <- B * priority
-    }
+    
+    priority <- c(c(2, 1, 0, 1, 2, 1), c(rep(0, nB-6)))
+    B <- B * priority
 
     error <- actual - fitted
     loss <- sqrt(sum((error/yDenominator)^2)/obsActual)
@@ -36,13 +34,8 @@ myLoss_BackcastingInitials <- function(actual, fitted, B) {
     obsActual <- length(actual)
     yDenominator <- max(sd(diff(actual)),1)
 
-    if (length(B) == 3) {
-        priority <- 0.5^c(1,0,0)
-        B <- B * priority
-    } else if (length(B) == 5) {
-        priority <- 0.5^c(2,1,0,1)
-        B <- B * priority
-    }
+    priority <- c(2, 1, 0, 1)
+    B <- B * priority
 
     error <- actual - fitted
     loss <- sqrt(sum((error/yDenominator)^2)/obsActual)
@@ -60,7 +53,8 @@ for (lambda in seq(0,1,0.1)) {
 
 }
 
-
-adam(y, model = "AAdA", initial = "backcasting", loss = "LASSO", lags = 10, lambda = lambda)
-adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)
-fit <- adam(y, model = "AAdA", initial = "backcasting", loss = myLoss_BackcastingInitials, lags = 10)
+lambda <- 0.1
+fit <- adam(y, model = "AAdA", initial = "optimal", loss = "LASSO", lags = 7, lambda = lambda)
+fit <- adam(y, model = "AAdA", initial = "backcasting", loss = "LASSO", lags = 7, lambda = lambda)
+fit <- adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)
+fit <- adam(y, model = "AAdA", initial = "backcasting", loss = myLoss_BackcastingInitials, lags = 10, h = 10)
