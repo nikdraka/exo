@@ -18,6 +18,8 @@ myLoss_OptimalInitials <- function(actual, fitted, B) {
     obsActual <- length(actual)
     yDenominator <- max(sd(diff(actual)),1)
     
+    B[4] <- 1 - B[4]
+    
     priority <- c(c(2, 1, 0, 1, 2, 1), c(rep(0, nB-6)))
     B <- B * priority
 
@@ -34,6 +36,8 @@ myLoss_BackcastingInitials <- function(actual, fitted, B) {
     obsActual <- length(actual)
     yDenominator <- max(sd(diff(actual)),1)
 
+    B[4] <- 1 - B[4]
+    
     priority <- c(2, 1, 0, 1)
     B <- B * priority
 
@@ -48,12 +52,12 @@ myLoss_BackcastingInitials <- function(actual, fitted, B) {
 for (lambda in seq(0,1,0.1)) {
 
     lambda <<- lambda
-    print(adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)$lossValue)
-    print(adam(y, model = "AAdA", initial = "backcasting", loss = myLoss_BackcastingInitials, lags = 10)$lossValue)
+    # print(adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)$B["phi"])
+    print(adam(y, model = "AAdA", initial = "backcasting", loss = myLoss_BackcastingInitials, lags = 10)$B["phi"])
 
 }
 
-lambda <- 0.1
+lambda <- 0.9
 fit <- adam(y, model = "AAdA", initial = "optimal", loss = "LASSO", lags = 10, lambda = lambda)
 fit <- adam(y, model = "AAdA", initial = "backcasting", loss = "LASSO", lags = 7, lambda = lambda)
 fit <- adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)
