@@ -16,7 +16,7 @@ result.BcsPrio <- vector("list", iter)
 
 start.time <- Sys.time()
 
-iter.run <- function() {
+iter.run.adam <- function() {
   
   y <- sim.es(model = "AAdN", obs = 100, nsim = 1, frequency = 10, 
               bounds = "usual", persistence = c(0.5, 0.4), phi = 0.7,
@@ -87,3 +87,36 @@ iter.run <- function() {
 y <- yData$data[,1]
  
 system.time({xyz <- iter.run()})
+
+iter.run.adam <- function() {
+  
+  y <- sim.es(model = "AAdN", obs = 100, nsim = 1, frequency = 10, 
+              bounds = "usual", persistence = c(0.5, 0.4), phi = 0.7,
+              initial = c(100, 2))$data
+  
+  mat.ADAM <- matrix(NA, ncol = 2, nrow = 7)
+  
+  for (j in 2:8) {
+    
+    yTrain <- window(y, start = c(1,1), end = c(j,10))
+    yHoldout <- window(y, start = c(j+1,1), end = c(j+1,10))
+    
+    fit.ADAM.Opt <- adam(yTrain, model = "XXX", initial = "optimal", lags = 10, h = 10)
+    fit.ADAM.Bcs <- adam(yTrain, model = "XXX", initial = "backcasting", lags = 10, h = 10)
+    
+    holdOutRMSE.ADAM.Opt <- sqrt(mean((yHoldout-fit.ADAM.Opt$forecast)^2))
+    holdOutRMSE.ADAM.Bcs <- sqrt(mean((yHoldout-fit.ADAM.Bcs$forecast)^2))
+    
+    # param.ADAM.Opt <- c(fit.ADAM.Opt$persistence, fit.ADAM.Opt$phi, unlist(fit.ADAM.Opt$initial))
+    # param.ADAM.Bcs <- c(fit.ADAM.Bcs$persistence, fit.ADAM.Bcs$phi, unlist(fit.ADAM.Bcs$initial))
+    
+    mat.ADAM[j-1,1] <- c(holdOutRMSE.ADAM.Opt)
+    mat.ADAM[j-1,2] <- c(holdOutRMSE.ADAM.Bcs)
+  }
+  
+  return(colMeans(mat.ADAM))
+  
+}
+
+system.time({yyy <- iter.run.adam()})
+
