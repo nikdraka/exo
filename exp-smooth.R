@@ -54,7 +54,7 @@ for (lambda in seq(0,1,0.1)) {
 }
 
 lambda <- 0.1
-fit <- adam(y, model = "AAdA", initial = "optimal", loss = "LASSO", lags = 7, lambda = lambda)
+fit <- adam(y, model = "AAdA", initial = "optimal", loss = "LASSO", lags = 10, lambda = lambda)
 fit <- adam(y, model = "AAdA", initial = "backcasting", loss = "LASSO", lags = 7, lambda = lambda)
 fit <- adam(y, model = "AAdA", initial = "optimal", loss = myLoss_OptimalInitials, lags = 10)
 fit <- adam(y, model = "AAdA", initial = "backcasting", loss = myLoss_BackcastingInitials, lags = 10, h = 10)
