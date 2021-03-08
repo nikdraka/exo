@@ -24,7 +24,7 @@ stopCluster(cl)
 
 
 set.seed(020193)
-mat.benchmark <- matrix(NA, ncol = 2, nrow = 500)
+mat.benchmark <- matrix(NA, ncol = 16, nrow = 500)
 for (i in 1:500) {
   mat.benchmark[i,] <- iter.run.adam()
 }
