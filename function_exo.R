@@ -94,29 +94,41 @@ iter.run.adam <- function() {
               bounds = "usual", persistence = c(0.5, 0.4), phi = 0.7,
               initial = c(100, 2))$data
   
-  mat.ADAM <- matrix(NA, ncol = 2, nrow = 7)
-  
+  mat.ADAM <- matrix(NA, ncol = 1, nrow = 7)
+  mat.Param <- matrix(NA, ncol = 15, nrow = 7, dimnames = list(c(), c(lbls)))
   for (j in 2:8) {
     
     yTrain <- window(y, start = c(1,1), end = c(j,10))
     yHoldout <- window(y, start = c(j+1,1), end = c(j+1,10))
     
     fit.ADAM.Opt <- adam(yTrain, model = "XXX", initial = "optimal", lags = 10, h = 10)
-    fit.ADAM.Bcs <- adam(yTrain, model = "XXX", initial = "backcasting", lags = 10, h = 10)
+    # fit.ADAM.Bcs <- adam(yTrain, model = "XXX", initial = "backcasting", lags = 10, h = 10)
     
     holdOutRMSE.ADAM.Opt <- sqrt(mean((yHoldout-fit.ADAM.Opt$forecast)^2))
-    holdOutRMSE.ADAM.Bcs <- sqrt(mean((yHoldout-fit.ADAM.Bcs$forecast)^2))
+    # holdOutRMSE.ADAM.Bcs <- sqrt(mean((yHoldout-fit.ADAM.Bcs$forecast)^2))
     
     # param.ADAM.Opt <- c(fit.ADAM.Opt$persistence, fit.ADAM.Opt$phi, unlist(fit.ADAM.Opt$initial))
     # param.ADAM.Bcs <- c(fit.ADAM.Bcs$persistence, fit.ADAM.Bcs$phi, unlist(fit.ADAM.Bcs$initial))
+    mat.Param[j-1,c(lbls[which(complete.cases(match(lbls, names(fit.ADAM.Opt$B)))==TRUE)])] <- fit.ADAM.Opt$B
+    
     
     mat.ADAM[j-1,1] <- c(holdOutRMSE.ADAM.Opt)
-    mat.ADAM[j-1,2] <- c(holdOutRMSE.ADAM.Bcs)
+    # mat.ADAM[j-1,2] <- c(holdOutRMSE.ADAM.Bcs)
   }
   
-  return(colMeans(mat.ADAM))
+  return(c(colMeans(mat.ADAM), colMeans(mat.Param, na.rm = TRUE)))
   
 }
 
 system.time({yyy <- iter.run.adam()})
 
+
+lbls <- names(fit$B)
+fit1 <- adam(y, model = "AAN", initial = "optimal", lags = 10)
+
+
+
+tab <- matrix(NA, ncol = 15, nrow = 1, dimnames = list(c(), c(lbls)))
+# match(lbls, names(fit1$B))
+
+tab[,c(lbls[which(complete.cases(match(lbls, names(fit1$B)))==TRUE)])] <- fit1$B
